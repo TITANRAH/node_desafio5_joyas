@@ -1,12 +1,12 @@
 const { pool } = require("../config/db");
-const format = require('pg-format')
+const format = require("pg-format");
 
 exports.obtenerJoyas = async () => {
   try {
     const consulta = "SELECT * FROM inventario;";
 
     const { rows } = await pool.query(consulta);
-    // console.log("el resultado", rows);
+
     return rows;
   } catch (error) {
     console.log("No se pudo llevar a cabo la consulta", error);
@@ -15,7 +15,6 @@ exports.obtenerJoyas = async () => {
 };
 
 exports.obtenerJoyasFiltro = async ({
-  
   order_by = "stock_ASC",
   page = 1,
   limits = 2,
@@ -42,35 +41,39 @@ exports.obtenerJoyasFiltro = async ({
   return joyas;
 };
 
-
-exports.obtenerJoyasPorFiltros = async ({precio_min, precio_max, categoria, metal})=>{
+exports.obtenerJoyasPorFiltros = async ({
+  precio_min,
+  precio_max,
+  categoria,
+  metal,
+}) => {
   let filtros = [];
- 
-  if(precio_min){
+
+  if (precio_min) {
     filtros.push(` precio >= ${precio_min} `);
   }
 
-  if(precio_max){
+  if (precio_max) {
     filtros.push(` precio <= ${precio_max} `);
   }
 
-  if(categoria){
+  if (categoria) {
     filtros.push(` categoria = '${categoria}' `);
 
-  if(metal){
-    filtros.push(` metal = '${metal}' `);
-}
+    if (metal) {
+      filtros.push(` metal = '${metal}' `);
+    }
 
-  let consulta ='SELECT * FROM inventario';
-  if(filtros.length > 0){
+    let consulta = "SELECT * FROM inventario";
+    if (filtros.length > 0) {
+      filtros = filtros.join(" AND ");
+      consulta += ` WHERE ${filtros}`;
 
-      filtros = filtros.join(' AND ')
-      consulta +=  ` WHERE ${filtros}` ;
+      console.log(consulta);
+    }
 
-      console.log(consulta)
+    const { rows: joyas } = await pool.query(consulta);
+
+    return joyas;
   }
-
-  const { rows: joyas} = await pool.query(consulta);
-
-  return joyas
-}}
+};
