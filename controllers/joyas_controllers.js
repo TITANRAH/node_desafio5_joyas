@@ -1,5 +1,6 @@
 const {obtenerJoyas, obtenerJoyasFiltro, obtenerJoyasPorFiltros } = require("./consultas");
 const ErrorResponse = require("../helper/errorResponse");
+const { response } = require("express");
 
 exports.getJoyas = async (req, res, next) => {
   try {
@@ -35,9 +36,12 @@ exports.getJoyasFiltro = async (req, res, next) => {
       new ErrorResponse(
         "Error, no ha sido posible obtener por filtros, error: " +
           err.message +
-          400
+          400,
+          
       )
+      
     );
+    
   }
 };
 
